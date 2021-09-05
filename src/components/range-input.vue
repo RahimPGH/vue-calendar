@@ -2,12 +2,28 @@
   <div class="vuec-range-input">
     <div class="vuec-date-inputs" @click="showPicker">
       <div class="input" :class="{ fromDate: activeTab == 'fromDate' }">
-        <div>{{ labels[0] }}</div>
-        {{ formattedDates[0] }}
+        <div class="icon__custom">
+          <IconCalendar />
+
+          <template v-if="value[0]">
+            {{ value[0] }}
+          </template>
+          <template v-else>
+            {{ labels[0] }}
+          </template>
+        </div>
       </div>
       <div class="input" :class="{ toDate: activeTab == 'toDate' }">
-        <div>{{ labels[1] }}</div>
-        {{ formattedDates[1] }}
+        <div class="icon__custom">
+          <IconCalendar />
+
+          <template v-if="value[1]">
+            {{ value[1] }}
+          </template>
+          <template v-else>
+            {{ labels[1] }}
+          </template>
+        </div>
       </div>
     </div>
     <Transition name="popup-animation">
@@ -30,6 +46,7 @@
           :min-date="minDate"
           :max-date="maxDate"
           :visible-months="2"
+          :prices="prices"
           :selectable="true"
           @input="onSelectionChange"
         />
@@ -41,17 +58,24 @@
 <script>
 import VuecSelectRange from "./select-range.vue";
 import IconClose from "./icons/close.vue";
+import IconCalendar from "./icons/calendar.vue";
 import dayjs from "../date";
 
 export default {
   components: {
     VuecSelectRange,
     IconClose,
+    IconCalendar,
   },
   props: {
     theme: {
       type: String,
       default: "default",
+    },
+    prices: {
+      type: Array,
+      required: false,
+      default: null,
     },
     mobile: {
       type: Boolean,
@@ -99,7 +123,7 @@ export default {
     },
     format: {
       type: String,
-      default: "YYYY/MM/DD",
+      default: "YYYY-MM-DD",
     },
   },
   data() {
@@ -109,7 +133,7 @@ export default {
       temporaryDisableClickListen: false,
       fromDate,
       toDate,
-      dates: [dayjs(fromDate), dayjs(toDate)],
+      dates: [],
       activeTab: "",
     };
   },
@@ -151,6 +175,10 @@ export default {
       if (date.length > 1) {
         this.dates = [fromDate, toDate];
         this.visible = false;
+        this.$emit(
+          "selected-dates",
+          this.dates.map((date) => date.format(this.format))
+        );
       }
     },
   },
@@ -236,5 +264,13 @@ export default {
 }
 .toDate {
   background: black;
+}
+.icon__custom {
+  display: flex;
+  align-content: center;
+  align-items: center;
+}
+.icon__custom svg {
+  margin-left: 5px;
 }
 </style>

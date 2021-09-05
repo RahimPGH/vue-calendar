@@ -31,6 +31,7 @@
         :selectable="selectable"
         :inventory="month.inventory"
         :selection="month.selections"
+        :prices="prices"
         :date-under-cursor="dateUnderCursor"
         @click-day="onDayClick"
         @hover="onHover"
@@ -44,7 +45,23 @@
         <template slot="day" slot-scope="props">
           <slot v-bind="props" name="day">
             <div class="vuec-default-day">
-              {{ props.date.format("D") }}
+              <div class="vuec-default-time" v-if="props.date.format(`d`) != 5">
+                {{ props.date.format("D") }}
+              </div>
+              <div class="vuec-default-time-friday" v-else>
+                {{ props.date.format("D") }}
+              </div>
+              <template v-if="props.prices">
+                <div
+                  class="vuec-default-price"
+                  v-for="(item, index) in props.prices"
+                  :key="index"
+                >
+                  <template v-if="item.date == props.date.format(`YYYY-MM-DD`)">
+                    {{ item.price }}
+                  </template>
+                </div>
+              </template>
             </div>
           </slot>
         </template>
@@ -116,6 +133,11 @@ export default {
       type: Boolean,
       default: false,
     },
+    prices: {
+      type: Array,
+      required: false,
+      default: null,
+    },
   },
   data() {
     return {
@@ -128,7 +150,7 @@ export default {
       const map = {};
 
       this.selections.forEach((item) => {
-        const month = dayjs(item, "YYYY/MM/DD").format("YYYY/MM");
+        const month = dayjs(item, "YYYY-MM-DD").format("YYYY-MM");
         map[month] = map[month] || [];
         map[month].push(item);
         return map;
@@ -149,7 +171,7 @@ export default {
       }
       let index = 0;
       while (index < this.visibleMonths) {
-        const monthKey = date.format("YYYY/MM");
+        const monthKey = date.format("YYYY-MM");
 
         months.push({
           date: dayjs(date),
@@ -252,5 +274,29 @@ export default {
       opacity: 0.3;
     }
   }
+}
+.vuec-btn-next,
+.vuec-btn-prev {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 2.375rem;
+  height: 2.375rem;
+  border: 1px solid #ddd;
+  border-radius: 0.5625rem;
+  box-shadow: 0 0 0.625rem 0 rgba(0, 0, 0, 0.07);
+  cursor: pointer;
+  padding: 0 !important;
+}
+.vuec-default-day {
+  flex-direction: column;
+}
+.vuec-default-price {
+  font-size: 13px;
+  opacity: 0.7;
+  margin-top: 4px;
+}
+.vuec-default-time-friday {
+  color: red;
 }
 </style>
