@@ -16,6 +16,10 @@ export default {
       type: Object,
       default: () => dayjs(),
     },
+    disabled_dates: {
+      type: Array,
+      default: () => [],
+    },
   },
   data() {
     return {

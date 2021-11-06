@@ -45,10 +45,18 @@
         <template slot="day" slot-scope="props">
           <slot v-bind="props" name="day">
             <div class="vuec-default-day">
-              <div class="vuec-default-time" v-if="props.date.format(`d`) != 5">
-                {{ props.date.format("D") }}
-              </div>
-              <div class="vuec-default-time-friday" v-else>
+              <div
+                class="vuec-default-time"
+                :class="{
+                  friday:
+                    props.date.format(`d`) == 5 ||
+                    disabled_dates.find((item) => {
+                      return item.date == props.date.format(`YYYY-MM-DD`)
+                        ? true
+                        : false;
+                    }),
+                }"
+              >
                 {{ props.date.format("D") }}
               </div>
               <template v-if="props.prices">
@@ -81,7 +89,6 @@ import dayjs from "../../date";
 import VuecMonth from "./month.vue";
 import IconArrowLeft from "../icons/arrow-left.vue";
 import IconArrowRight from "../icons/arrow-right.vue";
-
 export default {
   components: {
     VuecMonth,
@@ -92,6 +99,10 @@ export default {
     theme: {
       type: String,
       default: "default",
+    },
+    disabled_dates: {
+      type: Array,
+      default: () => [],
     },
     showPreviousWeeks: {
       type: Boolean,
@@ -204,6 +215,7 @@ export default {
       this.localDate = newDate;
     },
   },
+
   methods: {
     onHover(date) {
       if (!date.isSame(this.dateUnderCursor)) {
@@ -296,7 +308,7 @@ export default {
   opacity: 0.7;
   margin-top: 4px;
 }
-.vuec-default-time-friday {
+.friday {
   color: red;
 }
 </style>

@@ -4,6 +4,10 @@
       <div class="input">
         {{ formattedDate }}
       </div>
+      <span  v-if="visible === false && formattedDate == '' && value == ''">{{
+        placeholder
+      }}</span>
+      <span class="value_datepicker" v-if="formattedDate == '' ">{{ value }}</span>
     </div>
     <div v-show="visible" class="vuec-popup" @click="onClickDelegate">
       <VuecSelectSingle
@@ -15,6 +19,7 @@
         :min-date="minDate"
         :max-date="maxDate"
         @input="onSelectionChange"
+        :disabled_dates="disabled_dates"
       />
     </div>
   </div>
@@ -28,9 +33,17 @@ export default {
     VuecSelectSingle,
   },
   props: {
+    format: {
+      type: String,
+      default: "YYYY-MM-DD",
+    },
     theme: {
       type: String,
       default: "default",
+    },
+    placeholder: {
+      type: String,
+      default: "",
     },
     selectable: {
       type: Boolean,
@@ -61,12 +74,16 @@ export default {
       default: 1,
     },
     value: {
-      type: Object,
-      default: () => ({}),
+      type: String,
+      default: "",
     },
     open: {
       type: Boolean,
       default: false,
+    },
+    disabled_dates: {
+      type: Array,
+      default: () => [],
     },
   },
   data() {
@@ -78,7 +95,7 @@ export default {
   },
   computed: {
     formattedDate() {
-      return this.selection ? this.selection.format("YYYY/MM/DD") : "";
+      return this.selection ? this.selection.format("YYYY-MM-DD") : "";
     },
   },
   watch: {
@@ -110,7 +127,7 @@ export default {
     },
     onSelectionChange({ date }) {
       this.selection = dayjs(date);
-      this.$emit("input", this.selection);
+      this.$emit("input", date.format(this.format));
       this.visible = false;
     },
   },

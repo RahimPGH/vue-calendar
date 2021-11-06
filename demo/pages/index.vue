@@ -4,9 +4,27 @@
       <h2>Jalali</h2>
       {{ selected_range }}
       <div>
+        <VuecSingleInput
+          :date="todayInJalali"
+          :selectable="true"
+          value="1400-07-27"
+          :min-date="now"
+          :disabled_dates="disable_dates"
+          @input="singleInputback"
+          theme="orange"
+          placeholder="مبدا"
+        />
+      </div>
+    </div>
+
+    <div class="jalali">
+      <h2>Jalali</h2>
+      {{ selected_range }}
+      <div>
         <VuecRangeInput
           :date="todayInJalali"
           :selectable="true"
+          :disabled_dates="disable_dates"
           :value="selected_range"
           :min-date="now"
           @selected-dates="back"
@@ -62,6 +80,13 @@ export default {
       maxDate: dayjs().add(90, "day"),
       dates: [],
       selected_range: [],
+      disable_dates: [
+        { date: "1400-07-04" },
+        { date: "1400-07-05" },
+        { date: "1400-07-06" },
+        { date: "1400-07-07" },
+        { date: "1400-07-08" },
+      ],
       prices: [
         {
           date: "1400-07-10",
@@ -75,6 +100,9 @@ export default {
     };
   },
   methods: {
+    singleInputback(date) {
+      console.log(date);
+    },
     back(dates) {
       this.selected_range = dates;
     },

@@ -43,6 +43,7 @@
           :theme="theme"
           :value="dates"
           :date="date"
+          :disabled_dates="disabled_dates"
           :min-date="minDate"
           :max-date="maxDate"
           :visible-months="2"
@@ -68,6 +69,10 @@ export default {
     IconCalendar,
   },
   props: {
+    disabled_dates: {
+      type: Array,
+      default: () => [],
+    },
     theme: {
       type: String,
       default: "default",
